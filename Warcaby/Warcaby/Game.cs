@@ -181,5 +181,46 @@ namespace Warcaby
           
               return false;
           }
+          private bool CanCapture(int row, int col, bool isWhiteTurn, char piece)
+          {
+              int[] directions = { -1, 1 };
+          
+              foreach (int rowDir in directions)
+              {
+                  foreach (int colDir in directions)
+                  {
+                      int currentRow = row + rowDir;
+                      int currentCol = col + colDir;
+          
+                      while (currentRow >= 0 && currentRow < Size && currentCol >= 0 && currentCol < Size)
+                      {
+                          char currentPiece = board[currentRow, currentCol];
+          
+                          // Znalezienie przeciwnika na ścieżce
+                          if ((isWhiteTurn && (currentPiece == Black || currentPiece == BlackKing)) ||
+                              (!isWhiteTurn && (currentPiece == White || currentPiece == WhiteKing)))
+                          {
+                              int nextRow = currentRow + rowDir;
+                              int nextCol = currentCol + colDir;
+          
+                              if (nextRow >= 0 && nextRow < Size && nextCol >= 0 && nextCol < Size &&
+                                  board[nextRow, nextCol] == Empty)
+                              {
+                                  return true;
+                              }
+                              break; // Wyjście, bo nie można kontynuować po znalezieniu przeciwnika
+                          }
+          
+                          if (currentPiece != Empty)
+                              break; // Napotkano własny pionek lub inną przeszkodę
+          
+                          currentRow += rowDir;
+                          currentCol += colDir;
+                      }
+                  }
+              }
+          
+              return false;
+          }
      }
 }
