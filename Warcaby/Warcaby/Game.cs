@@ -72,5 +72,114 @@ namespace Warcaby
               }
               return true;
           }
+          public bool MovePiece(bool isWhiteTurn, int startRow, int startCol, int endRow, int endCol, out bool additionalCapture)
+          {
+              additionalCapture = false;
+              char piece = board[startRow, startCol];
+              char target = board[endRow, endCol];
+          
+              if ((isWhiteTurn && (piece != White && piece != WhiteKing)) || (!isWhiteTurn && (piece != Black && piece != BlackKing)))
+                  return false;
+          
+              if (target != Empty)
+                  return false;
+          
+              int rowDiff = endRow - startRow;
+              int colDiff = endCol - startCol;
+              if (piece == WhiteKing || piece == BlackKing)
+              {
+                  if (Math.Abs(rowDiff) == Math.Abs(colDiff)) // Ruch na przekątnej
+                  {
+                      if (CanMoveDiagonally(startRow, startCol, endRow, endCol))
+                      {
+                          board[endRow, endCol] = piece;
+                          board[startRow, startCol] = Empty;
+                          additionalCapture = CanCapture(endRow, endCol, isWhiteTurn, piece);
+                          return true;
+                      }
+                  }
+              }
+          
+              if (piece == WhiteKing || piece == BlackKing)
+              {
+                  int rowStep = rowDiff > 0 ? 1 : -1;
+                  int colStep = colDiff > 0 ? 1 : -1;
+          
+                  int currentRow = startRow + rowStep;
+                  int currentCol = startCol + colStep;
+          
+                  bool captured = false;
+          
+                  while (currentRow != endRow && currentCol != endCol)
+                  {
+                      char currentPiece = board[currentRow, currentCol];
+          
+                      if (currentPiece != Empty)
+                      {
+                          if ((isWhiteTurn && (currentPiece == Black || currentPiece == BlackKing)) ||
+                              (!isWhiteTurn && (currentPiece == White || currentPiece == WhiteKing)))
+                          {
+                              if (captured)
+                                  return false; // Możemy zbić tylko raz w jednym ruchu
+          
+                              captured = true;
+                          }
+                          else
+                          {
+                              return false; // Napotkano przeszkodę
+                          }
+                      }
+          
+                      currentRow += rowStep;
+                      currentCol += colStep;
+                  }
+          
+                  if (captured)
+                  {
+                      // Usuń zbitego przeciwnika
+                      int capturedRow = (startRow + endRow) / 2;
+                      int capturedCol = (startCol + endCol) / 2;
+                      board[capturedRow, capturedCol] = Empty;
+                  }
+          
+                  board[endRow, endCol] = piece;
+                  board[startRow, startCol] = Empty;
+          
+                  additionalCapture = CanCapture(endRow, endCol, isWhiteTurn, piece);
+                  return true;
+              }
+          
+          
+          
+              if (Math.Abs(rowDiff) == 1 && Math.Abs(colDiff) == 1)
+              {
+                  board[endRow, endCol] = piece;
+                  board[startRow, startCol] = Empty;
+                  PromoteIfNeeded(endRow, endCol, isWhiteTurn);
+                  return true;
+              }
+              else if (Math.Abs(rowDiff) >= 2 && Math.Abs(rowDiff) == Math.Abs(colDiff))
+              {
+                  int stepRow = rowDiff / Math.Abs(rowDiff);
+                  int stepCol = colDiff / Math.Abs(colDiff);
+                  int midRow = startRow + stepRow;
+                  int midCol = startCol + stepCol;
+                  char midPiece = board[midRow, midCol];
+          
+                  if ((isWhiteTurn && (midPiece == Black || midPiece == BlackKing)) ||
+                      (!isWhiteTurn && (midPiece == White || midPiece == WhiteKing)))
+                  {
+                      board[endRow, endCol] = piece;
+                      board[startRow, startCol] = Empty;
+                      board[midRow, midCol] = Empty;
+                      PromoteIfNeeded(endRow, endCol, isWhiteTurn);
+          
+                      additionalCapture = CanCapture(endRow, endCol, isWhiteTurn, piece);
+                      return true;
+                  }
+              }
+          
+              return false;
+          }
      }
 }
