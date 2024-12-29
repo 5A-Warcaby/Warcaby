@@ -222,5 +222,12 @@ namespace Warcaby
           
               return false;
           }
+          private void PromoteIfNeeded(int row, int col, bool isWhiteTurn)
+          {
+              if (isWhiteTurn && row == 0)
+                  board[row, col] = WhiteKing;
+              else if (!isWhiteTurn && row == 7)
+                  board[row, col] = BlackKing;
+          }
      }
 }
