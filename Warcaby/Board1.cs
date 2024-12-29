@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Xml.Linq;
 
 namespace Warcaby
 {
-     public void PlayGame()
-     { 
+     public class Board
+     {
           public const int Size = 8;
           public char[,] board;
           public const char Empty = '.';
