@@ -54,5 +54,23 @@ namespace Warcaby
               }
               Console.WriteLine("  A B C D E F G H");
           }
+          private bool CanMoveDiagonally(int startRow, int startCol, int endRow, int endCol)
+          {
+              int rowStep = endRow > startRow ? 1 : -1;
+              int colStep = endCol > startCol ? 1 : -1;
+          
+              int currentRow = startRow + rowStep;
+              int currentCol = startCol + colStep;
+          
+              while (currentRow != endRow && currentCol != endCol)
+              {
+                  if (board[currentRow, currentCol] != Empty)
+                      return false;
+          
+                  currentRow += rowStep;
+                  currentCol += colStep;
+              }
+              return true;
+          }
      }
 }
