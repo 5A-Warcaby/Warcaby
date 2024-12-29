@@ -229,5 +229,15 @@ namespace Warcaby
               else if (!isWhiteTurn && row == 7)
                   board[row, col] = BlackKing;
           }
+          public bool IsGameOver(bool isWhiteTurn)
+          {
+              foreach (char piece in board)
+              {
+                  if ((isWhiteTurn && (piece == White || piece == WhiteKing)) ||
+                      (!isWhiteTurn && (piece == Black || piece == BlackKing)))
+                      return false;
+              }
+              return true;
+          }
      }
 }
